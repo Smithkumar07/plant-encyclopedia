@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 include 'db.php';
@@ -10,27 +11,6 @@ if (!isset($_SESSION['user'])) {
 $user_id = $_SESSION['user_id'] ?? 0; 
 $message = '';
 
-// Handle Add Plant form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if(isset($_POST['add_plant'])) {
-        $common_name = $conn->real_escape_string($_POST['common_name']);
-        $scientific_name = $conn->real_escape_string($_POST['scientific_name']);
-        $description = $conn->real_escape_string($_POST['description']);
-        $image_url = $conn->real_escape_string($_POST['image_url']);
-
-        $conn->query("INSERT INTO user_plants (user_id, common_name, scientific_name, description, image_url)
-                      VALUES ('$user_id','$common_name','$scientific_name','$description','$image_url')");
-        $message = "Plant added successfully!";
-    } elseif(isset($_POST['edit_plant'])) {
-        $id = $_POST['plant_id'];
-        $common_name = $conn->real_escape_string($_POST['common_name']);
-        $scientific_name = $conn->real_escape_string($_POST['scientific_name']);
-        $description = $conn->real_escape_string($_POST['description']);
-        $image_url = $conn->real_escape_string($_POST['image_url']);
-        $conn->query("UPDATE user_plants SET common_name='$common_name', scientific_name='$scientific_name', description='$description', image_url='$image_url' WHERE id='$id' AND user_id='$user_id'");
-        $message = "Plant updated successfully!";
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -102,7 +82,7 @@ body { background: linear-gradient(120deg, #d0f0c0, #f0f8ff); color: #333; overf
 #sidebar a:hover { color:white; }
 
 /* MAIN CONTENT */
-#main-content { margin-left: 150px; padding: 170px 30px 30px; max-width: 1200px; }
+#main-content { margin-left: 150px; padding: 170px 30px 30px; max-width: 1300px; }
 
 /* PRODUCT LIST */
 #product-list { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; padding-bottom:20px; }
@@ -181,49 +161,11 @@ body { background: linear-gradient(120deg, #d0f0c0, #f0f8ff); color: #333; overf
 
 <!-- Product List -->
 <div id="product-list">
-<?php
-$result = $conn->query("SELECT * FROM user_plants WHERE user_id='$user_id' ORDER BY created_at DESC");
-while($plant = $result->fetch_assoc()){
-    echo "<div data-id='{$plant['id']}'>";
-    echo "<h3>{$plant['common_name']}</h3>";
-    echo "<p><em>{$plant['scientific_name']}</em></p>";
-    echo "<img src='".($plant['image_url'] ?: "https://via.placeholder.com/200x200?text=No+Image")."' alt='{$plant['common_name']}' />";
-    echo "<p>{$plant['description']}</p>";
-    echo "<button class='crud-btn edit-btn' onclick='openEditModal({$plant['id']},\"{$plant['common_name']}\",\"{$plant['scientific_name']}\",\"{$plant['description']}\",\"{$plant['image_url']}\")'>Edit</button>";
-    echo "<a class='crud-btn delete-btn' href='delete_plant.php?id={$plant['id']}' onclick='return confirm(\"Are you sure?\")'>Delete</a>";
-    echo "</div>";
-}
-?>
-</div>
-<div id="add-plant-form">
-    <h3>Add a New Plant</h3>
-    <?php if($message != '') { echo "<div class='message'>$message</div>"; } ?>
-    <form method="POST">
-        <input type="hidden" name="add_plant">
-        <input type="text" name="common_name" placeholder="Common Name" required>
-        <input type="text" name="scientific_name" placeholder="Scientific Name" required>
-        <input type="text" name="image_url" placeholder="Image URL">
-        <textarea name="description" placeholder="Description"></textarea>
-        <button type="submit">Add Plant</button>
-    </form>
+
 </div>
 
-<!-- Edit Modal -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeEditModal()">&times;</span>
-        <h3>Edit Plant</h3>
-        <form method="POST">
-            <input type="hidden" name="edit_plant" value="1">
-            <input type="hidden" name="plant_id" id="edit_id">
-            <input type="text" name="common_name" id="edit_common_name" placeholder="Common Name" required>
-            <input type="text" name="scientific_name" id="edit_scientific_name" placeholder="Scientific Name" required>
-            <input type="text" name="image_url" id="edit_image_url" placeholder="Image URL">
-            <textarea name="description" id="edit_description" placeholder="Description"></textarea>
-            <button type="submit">Update Plant</button>
-        </form>
-    </div>
-</div>
+
+
 
 <section id="about" style="padding:50px 30px; background:linear-gradient(120deg, #f0fff0, #e0f7fa); border-radius:15px; margin-bottom:40px;">
     <h2 style="text-align:center; font-size:36px; color:#2c3e50; margin-bottom:30px;">About Us 🌿</h2>
@@ -363,22 +305,9 @@ searchBtn.addEventListener('click', () => {
 
 fetchPlants('rose');
 
-// Edit Modal JS
-function openEditModal(id, common, scientific, desc, img){
-    document.getElementById('editModal').style.display='block';
-    document.getElementById('edit_id').value = id;
-    document.getElementById('edit_common_name').value = common;
-    document.getElementById('edit_scientific_name').value = scientific;
-    document.getElementById('edit_description').value = desc;
-    document.getElementById('edit_image_url').value = img;
-}
-function closeEditModal(){
-    document.getElementById('editModal').style.display='none';
-}
-window.onclick = function(event){
-    if(event.target==document.getElementById('editModal')) closeEditModal();
-}
+
 </script>
 
 </body>
 </html>
+
