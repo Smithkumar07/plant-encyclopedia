@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = $result->fetch_assoc();
         if (password_verify($password, $row['password'])) {
             $_SESSION['user'] = $row['name'];
-            header("Location: index.php"); // redirect to main encyclopedia
+            header("Location: index.html"); // redirect to main encyclopedia
             exit();
         } else {
             echo "Invalid password. <a href='login.html'>Try again</a>";
@@ -23,3 +23,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
